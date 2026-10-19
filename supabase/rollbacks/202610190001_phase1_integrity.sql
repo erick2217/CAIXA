@@ -1,0 +1,6 @@
+-- Rollback seguro da Fase 1: não remover dados nem a coluna idempotency_key.
+-- Para reverter a aplicação, publique a versão anterior do frontend. As assinaturas antigas
+-- continuam disponíveis como wrappers compatíveis. As funções novas são aditivas e inofensivas
+-- enquanto não chamadas; mantê-las evita apagar evidência de idempotência já gravada.
+-- Não reintroduza as versões antigas copiadas de schema_20261019_initial.sql: elas incluíam
+-- RH no caixa e permitiam fechar o caixa antes dos cobradores.

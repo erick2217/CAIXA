@@ -1,0 +1,3 @@
+-- Rollback seguro da Fase 3: manter logs de envio e convites para auditoria.
+-- Para pausar o serviço, desative o schedule da Edge Function e remova RESEND_API_KEY.
+-- As Edge Functions antigas podem continuar deployadas, mas deixam de ser invocadas.

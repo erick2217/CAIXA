@@ -1,0 +1,4 @@
+-- Rollback seguro da Fase 2: preservar organization_id, memberships, backups e audit_log.
+-- Não apague colunas nem restaure snapshots sobre dados mais novos.
+-- Para voltar o frontend, mantenha a organização inicial por usuário e selecione-a como padrão.
+-- A migração é aditiva e wrappers antigos continuam disponíveis.
