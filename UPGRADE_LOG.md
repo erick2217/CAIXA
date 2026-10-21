@@ -65,3 +65,14 @@
 - `npm run format_check`: passou.
 - `npm run build`: passou; manifesto e service worker gerados.
 - Dimensões dos quatro PNGs verificadas com Sharp.
+
+## PWA — Etapa 2: service worker e cache de leitura
+
+- O precache inclui o app shell, arquivos estáticos, fontes locais/ícones e `/offline.html`; a navegação usa o fallback do shell.
+- Fontes do Google usam `StaleWhileRevalidate`. Apenas `GET /rest/v1/<tabela>` usa `NetworkFirst`, timeout de 3 s, 24 h e até 100 entradas. Auth, RPC, Functions e todos os métodos de escrita ficam fora da regra de cache.
+- O logout remove somente caches de leituras Supabase antes e depois de encerrar a sessão; falhas de limpeza são exibidas.
+- `npm run lint`: passou sem erros; 11 avisos legados.
+- `npm run typecheck`: passou.
+- `npm test -- --run`: passou (4 arquivos, 11 testes), incluindo métodos/rotas excluídos e erros de limpeza.
+- `npm run format_check`: passou.
+- `npm run build`: passou; inspeção do service worker gerado confirmou as rotas, o timeout e o cache restrito.

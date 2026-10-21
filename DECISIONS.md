@@ -57,3 +57,8 @@
 
 - Ícones PNG são gerados a partir do SVG do monograma usando `sharp` como dependência exclusivamente de desenvolvimento, permitida para essa geração e mantida reproduzível pelo script `npm run generate:pwa-icons`. Não foi usada uma fonte externa para compor os ícones; o desenho usa Playfair Display com Georgia como fallback.
 - O ícone maskable reduz o conteúdo para manter margem ampla dentro da zona segura. Para reverter esta etapa, remova o plugin e suas dependências, a configuração/metadata do PWA, os ícones e o script; isso não altera dados nem regras de negócio.
+
+## PWA — Etapa 2
+
+- A política de cache exclui todas as RPCs, inclusive as somente de leitura, para evitar classificar incorretamente qualquer RPC de escrita. Só respostas GET de tabelas PostgREST podem ser guardadas; auth, Functions, Realtime e métodos de escrita não correspondem à rota.
+- As leituras cacheadas são apagadas antes e depois do `signOut` para reduzir a chance de uma resposta em voo recriar dados após o logout. Ao reverter, remova a estratégia runtime de tabelas e o helper de limpeza; isso apenas desativa consulta offline e não altera operações financeiras.
