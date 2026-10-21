@@ -84,3 +84,24 @@
 - A instalação Android usa `beforeinstallprompt`; no iPhone a dica é dispensável e persistida em `localStorage`. O tema sincroniza a meta `theme-color`.
 - A atualização usa registro manual com prompt. A página só chama o update quando solicitado pelo usuário e recusa atualizar se houver formulário aberto.
 - Testes (6 arquivos, 15 casos), typecheck e build passaram; lint passou sem erros com 11 avisos legados. Os testes de cache e conectividade incluem falha de rede, rota e botões offline.
+
+## PWA — Etapa 4: experiência mobile
+
+- Menu inferior responsivo preserva os módulos existentes, com opções secundárias e logout em **Mais**; tabelas passam a cartões rotulados em telas pequenas.
+- Adicionadas safe areas para cabeçalho, menu e fechamento fixo; controles e campos seguem dimensões acessíveis e fontes de pelo menos 16 px nos inputs mobile.
+- Valores de caixa, folha, cobradores e serviços usam máscara em centavos `pt-BR` com teclado decimal; validações server-side continuam sendo a autoridade e handlers exigem valores positivos nos campos aplicáveis.
+- Validação visual a 390×844: sem overflow horizontal (390 px de documento), input a 16 px, botão principal a 44 px e `viewport-fit=cover`.
+
+## PWA — Etapa 5: privacidade e cabeçalhos
+
+- Implementado bloqueio por inatividade e segundo plano após cinco minutos, com reautenticação por senha Supabase e véu de privacidade ao perder foco.
+- Vercel entrega CSP, HSTS, `X-Content-Type-Options`, `X-Frame-Options`, `Referrer-Policy` e `Permissions-Policy`. HTTPS no domínio customizado e aplicação efetiva dos cabeçalhos precisam ser confirmados no deploy.
+- WebAuthn/biometria não foi adicionada por exigir validação segura de desafios no backend.
+
+## PWA — Etapas 6 e 7: validação e entrega
+
+- Lighthouse 11.7.1 no build final servido localmente: **PWA 1,00** (sem auditorias de instalação reprovadas) e **desempenho 0,85**. A nota de desempenho é de laboratório e varia com a rede/fonts; não substitui teste em produção.
+- `npm test -- --run`: 9 arquivos e 23 testes passaram, incluindo conectividade com chave pública, bloqueio após inatividade, bloqueio de gravações offline, limpeza de cache e cabeçalhos.
+- `npm run lint`: sem erros; permanecem 11 avisos React Hooks/Fast Refresh já conhecidos. `npm run typecheck`, `npm run format_check` e `npm run build`: passaram.
+- Manifesto e service worker responderam 200 no preview; nome/idioma/display/ícones do manifesto conferidos. O health endpoint com `apikey` respondeu 200; sem a chave retornou 401 e o hook foi ajustado para enviar somente a chave pública.
+- README e checklist de implantação atualizados. Testes reais em Android/iPhone, inspeção de headers no domínio publicado e confirmação de domínio/HTTPS seguem pendentes até o deploy/dispositivo.

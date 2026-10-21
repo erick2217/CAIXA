@@ -68,3 +68,18 @@
 - O app só considera conexão ativa após uma resposta bem-sucedida do health endpoint Auth do mesmo projeto, com `no-store` e timeout de 3 s; `navigator.onLine` sozinho não libera gravações. Ausência de URL/configuração Supabase mantém o estado offline por segurança.
 - Atualização nunca é aplicada automaticamente. Se há formulário aberto, a atualização fica pendente até o usuário fechar/salvar e clicar novamente; isso evita descartar dados ainda não gravados.
 - A instalação iOS usa a instrução nativa de Compartilhar, sem APIs biométricas ou dependências adicionais. Para reverter, remova os controles de instalação/atualização e o hook de conectividade; os handlers online podem permanecer como defesa adicional.
+
+## PWA — Etapa 4
+
+- A navegação mobile mantém quatro destinos frequentes e reúne módulos de acesso menos frequente e logout em **Mais**, em vez de remover funcionalidades ou tentar comprimir toda a navegação lateral em uma barra inferior.
+- Campos monetários usam dígitos como centavos e apresentação `pt-BR`; valores de transação, salário e serviço precisam ser maiores que zero, enquanto entrega de cobrador aceita zero como permitido pela regra existente.
+- Tabelas viram cartões rotulados em telas estreitas; no desktop preservam o formato tabular. Ajustes de safe-area respeitam os recortes do iPhone.
+- Reversão: remova o menu mobile, a apresentação mobile de tabelas e o helper de moeda; reponha inputs numéricos e validações equivalentes antes de retirar o helper.
+
+## PWA — Etapa 5
+
+- Após cinco minutos sem atividade ou em segundo plano, os valores deixam de ser renderizados e a sessão pede a senha da conta Supabase; a senha não é armazenada. Ao perder foco, um véu desfoca e oculta a tela para reduzir exposição no seletor de apps.
+- WebAuthn/biometria foi deixado de fora: não há backend para vincular credenciais e validar desafios com segurança. Simular biometria somente no navegador não seria uma reautenticação confiável.
+- Vercel fornece HTTPS/redirect do domínio; foram adicionados HSTS e cabeçalhos CSP/anti-sniffing/anti-frame em `vercel.json`. A CSP permite inline styles usados pelas barras e gráficos atuais, mas não scripts inline.
+- O health probe envia a chave pública Supabase pelo cabeçalho `apikey`: a chamada sem chave respondeu 401 no teste local, e com a chave pública respondeu 200. A chave não é um segredo de servidor; leituras e gravações continuam submetidas à sessão/RLS.
+- Reversão: retire o hook de bloqueio e a tela de reautenticação para voltar ao comportamento de sessão persistente; os cabeçalhos podem ser revertidos removendo a seção `headers` do Vercel.

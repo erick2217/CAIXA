@@ -20,3 +20,24 @@
 - [ ] Registre e pague serviço terceirizado; confira saída, vencimento seguinte e ausência de lembrete após baixa.
 - [ ] Teste reabertura somente com admin e justificativa, conferindo trilha de auditoria.
 - [ ] Configure alertas de falha das Edge Functions e monitore entregas do Resend.
+
+## PWA — segurança e testes em dispositivo
+
+- [ ] Confirme que o domínio de produção oferece HTTPS e redireciona HTTP para HTTPS; HSTS está definido no `vercel.json`.
+- [ ] Verifique nos headers da página: `Content-Security-Policy`, `Strict-Transport-Security`, `X-Content-Type-Options: nosniff`, `X-Frame-Options`, `Referrer-Policy` e `Permissions-Policy`.
+- [ ] Confirme que o build publicado contém `manifest.webmanifest`, `sw.js`, `offline.html`, favicon, Apple touch icon e todos os PNGs de instalação.
+- [ ] Android/Chrome: instalar pelo botão do app ou menu do navegador e abrir em modo standalone.
+- [ ] iPhone/Safari: **Compartilhar → Adicionar à Tela de Início**; verificar safe areas no cabeçalho, navegação e fechamento fixo.
+- [ ] Visitar telas com rede, ficar offline e conferir leitura somente das telas previamente visitadas; confirmar que lançamento, pagamento, fechamento e baixa estão desativados.
+- [ ] Restaurar a rede e confirmar reativação. Verificar nos logs de rede que nenhuma escrita ficou enfileirada durante o período offline.
+- [ ] Fazer logout; ficar offline e confirmar que leituras Supabase cacheadas não aparecem.
+- [ ] Publicar uma versão nova e confirmar o aviso manual de atualização; manter um formulário aberto e verificar que a atualização não o descarta.
+- [ ] Aguardar cinco minutos parado e em segundo plano; confirmar que os valores ficam ocultos. Senha incorreta ou falta de rede não deve desbloquear.
+- [ ] Alternar para o seletor de apps e confirmar que o conteúdo está desfocado/oculto; voltar e conferir a tela.
+- [ ] Executar Lighthouse nas categorias PWA e desempenho no build de produção HTTPS; registrar notas no `UPGRADE_LOG.md`.
+
+## Atualização e rollback do PWA
+
+- [ ] Usuários confirmam **Atualizar** no próprio app; não há recarga automática. Feche/salve formulários antes de atualizar.
+- [ ] Se a publicação apresentar regressão, reimplantar o último build estável no Vercel e validar a atualização pelo service worker.
+- [ ] Validar em aparelhos físicos Android e iPhone antes de anunciar a instalação para toda a equipe.
