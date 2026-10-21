@@ -62,3 +62,9 @@
 
 - A política de cache exclui todas as RPCs, inclusive as somente de leitura, para evitar classificar incorretamente qualquer RPC de escrita. Só respostas GET de tabelas PostgREST podem ser guardadas; auth, Functions, Realtime e métodos de escrita não correspondem à rota.
 - As leituras cacheadas são apagadas antes e depois do `signOut` para reduzir a chance de uma resposta em voo recriar dados após o logout. Ao reverter, remova a estratégia runtime de tabelas e o helper de limpeza; isso apenas desativa consulta offline e não altera operações financeiras.
+
+## PWA — Etapa 3
+
+- O app só considera conexão ativa após uma resposta bem-sucedida do health endpoint Auth do mesmo projeto, com `no-store` e timeout de 3 s; `navigator.onLine` sozinho não libera gravações. Ausência de URL/configuração Supabase mantém o estado offline por segurança.
+- Atualização nunca é aplicada automaticamente. Se há formulário aberto, a atualização fica pendente até o usuário fechar/salvar e clicar novamente; isso evita descartar dados ainda não gravados.
+- A instalação iOS usa a instrução nativa de Compartilhar, sem APIs biométricas ou dependências adicionais. Para reverter, remova os controles de instalação/atualização e o hook de conectividade; os handlers online podem permanecer como defesa adicional.

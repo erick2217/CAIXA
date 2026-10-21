@@ -130,6 +130,7 @@ export function ConfirmDialog({
   description,
   confirmLabel = "Confirmar",
   busy = false,
+  confirmDisabled = false,
   onCancel,
   onConfirm,
 }) {
@@ -154,7 +155,11 @@ export function ConfirmDialog({
           >
             Cancelar
           </button>
-          <button className="close-button" disabled={busy} onClick={onConfirm}>
+          <button
+            className="close-button"
+            disabled={busy || confirmDisabled}
+            onClick={onConfirm}
+          >
             <Check size={15} />
             {busy ? "Processando…" : confirmLabel}
             <ChevronRight size={15} />

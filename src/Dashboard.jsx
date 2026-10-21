@@ -1,19 +1,19 @@
 import { useCallback, useEffect, useState } from 'react'
-import { ArrowDownLeft, ArrowUpRight, Landmark, Wallet } from 'lucide-react'
+import { ArrowDownLeft, ArrowUpRight, ChevronLeft, ChevronRight, Wallet } from 'lucide-react'
 import { CollectorsModule, PayrollModule } from './Modules.jsx'
 import { ServiceReminderBanner } from './ServicesModule.jsx'
 
 const today=()=>{const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`}
 const money=n=>new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL'}).format(Number(n||0))
 const dateFmt=d=>new Intl.DateTimeFormat('pt-BR',{day:'2-digit',month:'short'}).format(new Date(`${d}T12:00:00`))
+const shiftDate=(date,amount)=>{const d=new Date(`${date}T12:00:00`);d.setDate(d.getDate()+amount);return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`}
+const fullDate=d=>new Intl.DateTimeFormat('pt-BR',{weekday:'long',day:'2-digit',month:'long',year:'numeric'}).format(new Date(`${d}T12:00:00`))
 
-function BrandLockup(){return <div className="pax-lockup"><span className="pax-seal"><b>PS</b><i/></span><span className="pax-wordmark"><strong>Pax Shalom</strong><small>SOCIEDADE FUNERÁRIA</small></span></div>}
-
-function CashSummary({supabase,date,refreshKey}){
+function CashSummary({supabase,date,refreshKey,onClosedChange}){
  const [summary,setSummary]=useState({income:0,expense:0,balance:0}),[busy,setBusy]=useState(true)
- const load=useCallback(async()=>{setBusy(true);const [{data:tx,error:te},{data:receipts,error:re},{data:collectorClose,error:ce},{data:cashClose,error:cce}]=await Promise.all([supabase.from('transactions').select('amount,type').eq('transaction_date',date).neq('category','RH'),supabase.from('collector_receipts').select('amount').eq('receipt_date',date),supabase.from('collector_cash_closures').select('id').eq('close_date',date).maybeSingle(),supabase.from('cash_closures').select('opening_balance').eq('close_date',date).maybeSingle()]);if(te||re||ce||cce){setBusy(false);return}let income=(tx||[]).filter(x=>x.type==='income').reduce((a,x)=>a+Number(x.amount),0);if(!collectorClose)income+=(receipts||[]).reduce((a,x)=>a+Number(x.amount),0);const expense=(tx||[]).filter(x=>x.type==='expense').reduce((a,x)=>a+Number(x.amount),0);const opening=Number(cashClose?.opening_balance||0);setSummary({income,expense,balance:opening+income-expense});setBusy(false)},[supabase,date,refreshKey])
+ const load=useCallback(async()=>{setBusy(true);const [{data:tx,error:te},{data:receipts,error:re},{data:collectorClose,error:ce},{data:cashClose,error:cce}]=await Promise.all([supabase.from('transactions').select('amount,type').eq('transaction_date',date).neq('category','RH'),supabase.from('collector_receipts').select('amount').eq('receipt_date',date),supabase.from('collector_cash_closures').select('id').eq('close_date',date).maybeSingle(),supabase.from('cash_closures').select('opening_balance,is_closed').eq('close_date',date).maybeSingle()]);if(te||re||ce||cce){setBusy(false);return}let income=(tx||[]).filter(x=>x.type==='income').reduce((a,x)=>a+Number(x.amount),0);if(!collectorClose)income+=(receipts||[]).reduce((a,x)=>a+Number(x.amount),0);const expense=(tx||[]).filter(x=>x.type==='expense').reduce((a,x)=>a+Number(x.amount),0);const opening=Number(cashClose?.opening_balance||0);setSummary({income,expense,balance:opening+income-expense});onClosedChange?.(cashClose?.is_closed===true);setBusy(false)},[supabase,date,refreshKey,onClosedChange])
  useEffect(()=>{load()},[load])
- return <div className="pax-summary">{[{label:'Entradas do dia',value:summary.income,icon:ArrowDownLeft,kind:'income',note:'Recebimentos e cobranças'},{label:'Saídas / pagamentos',value:summary.expense,icon:ArrowUpRight,kind:'expense',note:'Pagamentos e despesas'},{label:'Saldo atual',value:summary.balance,icon:Wallet,kind:'balance',note:'Saldo inicial + entradas − saídas'}].map(item=>{const Icon=item.icon;return <article className={`pax-stat ${item.kind}`} key={item.label}><span className="pax-stat-icon"><Icon size={18}/></span><div><small>{item.label}</small><strong>{busy?'—':money(item.value)}</strong><span>{item.note}</span></div></article>})}</div>
+ return <div className="overview-summary">{[{label:'Saldo atual do caixa',value:summary.balance,icon:Wallet,kind:'balance',note:'Saldo inicial + entradas − saídas'},{label:'Entradas do dia',value:summary.income,icon:ArrowDownLeft,kind:'income',note:'Recebimentos e cobranças'},{label:'Saídas e pagamentos',value:summary.expense,icon:ArrowUpRight,kind:'expense',note:'Pagamentos e despesas'}].map(item=>{const Icon=item.icon;return <article className={`overview-stat ${item.kind}`} key={item.label}><div className="overview-stat-label"><span><Icon size={17}/></span><small>{item.label}</small></div><strong>{busy?'—':money(item.value)}</strong><span>{item.note}</span></article>})}</div>
 }
 
 function CashFlowChart({supabase}){
@@ -24,7 +24,18 @@ function CashFlowChart({supabase}){
  return <section className="pax-panel pax-chart-panel"><div className="pax-panel-heading"><div><span className="pax-eyebrow">VISÃO DOS ÚLTIMOS 7 DIAS</span><h2>Fluxo de caixa</h2></div><div className="pax-legend"><span><i className="income-dot"/> Entradas</span><span><i className="expense-dot"/> Saídas</span></div></div><div className="pax-chart">{busy?<div className="pax-chart-empty">Carregando movimentações...</div>:!data.some(x=>x.income||x.expense)?<div className="pax-chart-empty">As entradas e saídas aparecerão aqui conforme forem lançadas.</div>:<div className="pax-chart-plot">{data.map((item,i)=><div className="pax-chart-column" key={`${item.day}-${i}`}><div className="pax-bar-set"><i className="pax-bar income-bar" style={{height:`${item.income/max*100}%`}} title={`Entradas: ${money(item.income)}`}/><i className="pax-bar expense-bar" style={{height:`${item.expense/max*100}%`}} title={`Saídas: ${money(item.expense)}`}/></div><small>{item.day}</small></div>)}</div>}</div></section>
 }
 
-export default function PaxDashboard({supabase,userId,onNotice,onCashChange,onOpenServices,role='financeiro'}){
- const [refresh,setRefresh]=useState(0);const updated=()=>{setRefresh(v=>v+1);onCashChange?.()}
-  return <div className="pax-dashboard mx-auto w-full"><section className="pax-brand-area"><BrandLockup/><div className="pax-slogan">RESPEITO <i/> DIGNIDADE <i/> PAZ</div><p>Gestão financeira com cuidado e transparência.</p></section><ServiceReminderBanner supabase={supabase} onOpen={onOpenServices}/><CashSummary supabase={supabase} date={today()} refreshKey={refresh}/><div className="pax-columns grid grid-cols-1 lg:grid-cols-2 gap-4"><div className="pax-left"><CollectorsModule supabase={supabase} userId={userId} onNotice={onNotice} onChange={updated} compact role={role}/></div><div className="pax-right"><CashFlowChart supabase={supabase}/>{['admin','financeiro','leitura'].includes(role)&&<PayrollModule supabase={supabase} userId={userId} onNotice={onNotice} onChange={updated} compact role={role}/>}</div></div><footer className="pax-footer"><span><Landmark size={14}/> Pax Shalom · Sociedade Funerária</span><span>RESPEITO · DIGNIDADE · PAZ</span></footer></div>
+export default function PaxDashboard({supabase,userId,onNotice,onCashChange,onOpenServices,onOpenPayroll,selectedDate=today(),onDateChange=()=>{},role='financeiro',online=true}){
+ const [refresh,setRefresh]=useState(0),[cashClosed,setCashClosed]=useState(false);const updated=()=>{setRefresh(v=>v+1);onCashChange?.()}
+ return <div className="overview-dashboard">
+  <section className="overview-heading">
+   <div><span className="overview-eyebrow">{fullDate(selectedDate)}</span><h1>Visão geral</h1></div>
+   <div className="overview-heading-actions"><div className="overview-date-control"><button type="button" aria-label="Dia anterior" onClick={()=>onDateChange(shiftDate(selectedDate,-1))}><ChevronLeft size={17}/></button><input aria-label="Data do caixa" type="date" value={selectedDate} onChange={e=>e.target.value&&onDateChange(e.target.value)}/><button type="button" aria-label="Próximo dia" onClick={()=>onDateChange(shiftDate(selectedDate,1))}><ChevronRight size={17}/></button></div><span className="overview-cash-status" data-closed={cashClosed}>{cashClosed?'Caixa fechado':'Caixa aberto'}</span></div>
+  </section>
+  <ServiceReminderBanner supabase={supabase} onOpen={onOpenServices}/>
+  <CashSummary supabase={supabase} date={selectedDate} refreshKey={refresh} onClosedChange={setCashClosed}/>
+  <div className="overview-columns">
+   <div className="overview-collectors"><CollectorsModule supabase={supabase} online={online} userId={userId} onNotice={onNotice} onChange={updated} compact role={role} selectedDate={selectedDate} onDateChange={onDateChange}/></div>
+   <div className="overview-side"><CashFlowChart supabase={supabase}/>{['admin','financeiro','leitura'].includes(role)&&<PayrollModule supabase={supabase} online={online} userId={userId} onNotice={onNotice} onChange={updated} compact role={role} onOpen={onOpenPayroll}/>}</div>
+  </div>
+ </div>
 }

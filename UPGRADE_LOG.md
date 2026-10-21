@@ -76,3 +76,11 @@
 - `npm test -- --run`: passou (4 arquivos, 11 testes), incluindo métodos/rotas excluídos e erros de limpeza.
 - `npm run format_check`: passou.
 - `npm run build`: passou; inspeção do service worker gerado confirmou as rotas, o timeout e o cache restrito.
+
+## PWA — Etapa 3: conectividade, atualização e instalação
+
+- Criado `useOnlineStatus` com eventos do navegador e verificação real em `/auth/v1/health`, sem cache e com timeout de 3 s; banner informa consulta offline e bloqueio de lançamentos.
+- Ações de caixa, cobradores, RH, serviços e permissões são desativadas offline e seus handlers também recusam gravações; chamadas de autenticação exigem conexão.
+- A instalação Android usa `beforeinstallprompt`; no iPhone a dica é dispensável e persistida em `localStorage`. O tema sincroniza a meta `theme-color`.
+- A atualização usa registro manual com prompt. A página só chama o update quando solicitado pelo usuário e recusa atualizar se houver formulário aberto.
+- Testes (6 arquivos, 15 casos), typecheck e build passaram; lint passou sem erros com 11 avisos legados. Os testes de cache e conectividade incluem falha de rede, rota e botões offline.
