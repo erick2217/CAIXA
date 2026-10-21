@@ -53,3 +53,15 @@
 3. Fechamento integrado consolida cobradores antes do caixa geral, com totais individuais no relatório.
 4. Pagamento do serviço usa RPC atômica, registra saída e avança o vencimento; falta teste de integração real.
 5. Cálculos críticos permanecem no PostgreSQL com locks e idempotência; aplicar e testar migrations ainda é pendente.
+
+## PWA — Etapa 1: manifesto e ícones
+
+- Configurado `vite-plugin-pwa` com `registerType: "prompt"` e manifesto Pax Shalom para Android/iOS.
+- Criados o SVG-fonte do monograma PS, ícones PNG 192x192, 512x512, maskable 512x512 com margem conservadora, Apple touch icon 180x180 e favicon SVG.
+- Incluídos metadados iOS, `viewport-fit=cover` e o script repetível de geração dos PNGs.
+- `npm run lint`: passou sem erros; 11 avisos legados.
+- `npm run typecheck`: passou.
+- `npm test -- --run`: passou (3 arquivos, 8 testes).
+- `npm run format_check`: passou.
+- `npm run build`: passou; manifesto e service worker gerados.
+- Dimensões dos quatro PNGs verificadas com Sharp.

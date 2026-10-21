@@ -52,3 +52,8 @@
 - 11 warnings de lint existentes em componentes antigos (hooks/Fast Refresh) não bloqueiam a execução, mas merecem correção em refatoração própria.
 - Não foi possível executar branch/commits porque Git não está instalado na sessão.
 - `@types/node` foi adicionado somente para tipar o teste de contrato que lê o schema local sem depender do banco.
+
+## PWA — Etapa 1
+
+- Ícones PNG são gerados a partir do SVG do monograma usando `sharp` como dependência exclusivamente de desenvolvimento, permitida para essa geração e mantida reproduzível pelo script `npm run generate:pwa-icons`. Não foi usada uma fonte externa para compor os ícones; o desenho usa Playfair Display com Georgia como fallback.
+- O ícone maskable reduz o conteúdo para manter margem ampla dentro da zona segura. Para reverter esta etapa, remova o plugin e suas dependências, a configuração/metadata do PWA, os ícones e o script; isso não altera dados nem regras de negócio.
