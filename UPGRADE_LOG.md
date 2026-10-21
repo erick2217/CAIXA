@@ -95,7 +95,7 @@
 ## PWA — Etapa 5: privacidade e cabeçalhos
 
 - Implementado bloqueio por inatividade e segundo plano após cinco minutos, com reautenticação por senha Supabase e véu de privacidade ao perder foco.
-- Vercel entrega CSP, HSTS, `X-Content-Type-Options`, `X-Frame-Options`, `Referrer-Policy` e `Permissions-Policy`. HTTPS no domínio customizado e aplicação efetiva dos cabeçalhos precisam ser confirmados no deploy.
+- Vercel entrega CSP, HSTS, `X-Content-Type-Options`, `X-Frame-Options`, `Referrer-Policy` e `Permissions-Policy`; aplicação dos cabeçalhos verificada em produção.
 - WebAuthn/biometria não foi adicionada por exigir validação segura de desafios no backend.
 
 ## PWA — Etapas 6 e 7: validação e entrega
@@ -103,5 +103,6 @@
 - Lighthouse 11.7.1 no build final servido localmente: **PWA 1,00** (sem auditorias de instalação reprovadas) e **desempenho 0,85**. A nota de desempenho é de laboratório e varia com a rede/fonts; não substitui teste em produção.
 - `npm test -- --run`: 9 arquivos e 23 testes passaram, incluindo conectividade com chave pública, bloqueio após inatividade, bloqueio de gravações offline, limpeza de cache e cabeçalhos.
 - `npm run lint`: sem erros; permanecem 11 avisos React Hooks/Fast Refresh já conhecidos. `npm run typecheck`, `npm run format_check` e `npm run build`: passaram.
-- Manifesto e service worker responderam 200 no preview; nome/idioma/display/ícones do manifesto conferidos. O health endpoint com `apikey` respondeu 200; sem a chave retornou 401 e o hook foi ajustado para enviar somente a chave pública.
-- README e checklist de implantação atualizados. O Lighthouse foi executado em preview local; dispositivos reais e headers no domínio publicado seguem pendentes. O deploy de produção não foi executado nesta sessão.
+- Manifesto, service worker e `offline.html` responderam 200 no preview e produção; os campos e ícones do manifesto foram conferidos. O health endpoint com `apikey` respondeu 200; sem a chave retornou 401 e o hook foi ajustado para enviar somente a chave pública.
+- Deploy de produção concluído pelo Vercel CLI: `https://caixapax.vercel.app`, implantação `dpl_GR9HBUc6Jg6BKfqFi14F8CXiBJoU`, estado **Ready**. A home retornou 200 e os cabeçalhos CSP, HSTS, `nosniff`, anti-frame, referrer e permissions foram verificados na resposta publicada.
+- README e checklist de implantação atualizados. Permanecem pendentes testes em aparelhos físicos Android/iPhone e validação do comportamento offline nesses dispositivos.
