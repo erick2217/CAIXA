@@ -104,4 +104,4 @@
 - `npm test -- --run`: 9 arquivos e 23 testes passaram, incluindo conectividade com chave pública, bloqueio após inatividade, bloqueio de gravações offline, limpeza de cache e cabeçalhos.
 - `npm run lint`: sem erros; permanecem 11 avisos React Hooks/Fast Refresh já conhecidos. `npm run typecheck`, `npm run format_check` e `npm run build`: passaram.
 - Manifesto e service worker responderam 200 no preview; nome/idioma/display/ícones do manifesto conferidos. O health endpoint com `apikey` respondeu 200; sem a chave retornou 401 e o hook foi ajustado para enviar somente a chave pública.
-- README e checklist de implantação atualizados. Testes reais em Android/iPhone, inspeção de headers no domínio publicado e confirmação de domínio/HTTPS seguem pendentes até o deploy/dispositivo.
+- README e checklist de implantação atualizados. O Lighthouse foi executado em preview local; dispositivos reais e headers no domínio publicado seguem pendentes. O deploy de produção não foi executado nesta sessão.
