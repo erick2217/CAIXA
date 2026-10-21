@@ -295,8 +295,8 @@ export default function ReportsModule({ supabase }) {
                 <tbody>
                   {Object.entries(receiptsByCollector).map(([name, amount]) => (
                     <tr key={name}>
-                      <td>{name}</td>
-                      <td>{money(amount)}</td>
+                      <td data-label="Cobrador">{name}</td>
+                      <td data-label="Total arrecadado">{money(amount)}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -331,16 +331,16 @@ export default function ReportsModule({ supabase }) {
                 <tbody>
                   {closures.map((c) => (
                     <tr key={c.close_date}>
-                      <td>
+                      <td data-label="Data">
                         {new Date(
                           `${c.close_date}T12:00:00`,
                         ).toLocaleDateString("pt-BR")}
                       </td>
-                      <td>{money(c.income_total)}</td>
-                      <td>{money(c.expense_total)}</td>
-                      <td>{money(c.expected_balance)}</td>
-                      <td>{money(c.counted_balance)}</td>
-                      <td>{money(c.difference)}</td>
+                      <td data-label="Entradas">{money(c.income_total)}</td>
+                      <td data-label="Saídas">{money(c.expense_total)}</td>
+                      <td data-label="Esperado">{money(c.expected_balance)}</td>
+                      <td data-label="Contado">{money(c.counted_balance)}</td>
+                      <td data-label="Diferença">{money(c.difference)}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -374,15 +374,17 @@ export default function ReportsModule({ supabase }) {
                 <tbody>
                   {rows.map((r) => (
                     <tr key={r.id}>
-                      <td>
+                      <td data-label="Data">
                         {new Date(
                           `${r.transaction_date}T12:00:00`,
                         ).toLocaleDateString("pt-BR")}
                       </td>
-                      <td>{r.type === "income" ? "Entrada" : "Saída"}</td>
-                      <td>{r.description}</td>
-                      <td>{r.category}</td>
-                      <td>{money(r.amount)}</td>
+                      <td data-label="Tipo">
+                        {r.type === "income" ? "Entrada" : "Saída"}
+                      </td>
+                      <td data-label="Descrição">{r.description}</td>
+                      <td data-label="Categoria">{r.category}</td>
+                      <td data-label="Valor">{money(r.amount)}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -412,18 +414,20 @@ export default function ReportsModule({ supabase }) {
                 <tbody>
                   {payroll.map((p) => (
                     <tr key={p.id}>
-                      <td>
+                      <td data-label="Data">
                         {new Date(
                           `${p.payment_date}T12:00:00`,
                         ).toLocaleDateString("pt-BR")}
                       </td>
-                      <td>{p.funcionarios?.name || "Funcionário"}</td>
-                      <td>
+                      <td data-label="Funcionário">
+                        {p.funcionarios?.name || "Funcionário"}
+                      </td>
+                      <td data-label="Tipo">
                         {p.movement_type === "advance"
                           ? "Adiantamento"
                           : "Pagamento de salário"}
                       </td>
-                      <td>{money(p.amount)}</td>
+                      <td data-label="Valor">{money(p.amount)}</td>
                     </tr>
                   ))}
                 </tbody>

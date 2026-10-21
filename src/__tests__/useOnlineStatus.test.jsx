@@ -25,21 +25,40 @@ describe("useOnlineStatus", () => {
 
   it("reports online only after the health endpoint responds successfully", async () => {
     const { result, unmount } = renderHook(() =>
-      useOnlineStatus("https://project.supabase.co/auth/v1/health"),
+      useOnlineStatus(
+        "https://project.supabase.co/auth/v1/health",
+        "public-test-key",
+      ),
     );
 
     await waitFor(() => expect(result.current).toBe(true));
     expect(fetch).toHaveBeenCalledWith(
       "https://project.supabase.co/auth/v1/health",
-      expect.objectContaining({ cache: "no-store" }),
+      expect.objectContaining({
+        cache: "no-store",
+        headers: { apikey: "public-test-key" },
+      }),
     );
+    unmount();
+  });
+
+  it("fails closed when the public project key is missing", () => {
+    const { result, unmount } = renderHook(() =>
+      useOnlineStatus("https://project.supabase.co/auth/v1/health"),
+    );
+
+    expect(result.current).toBe(false);
+    expect(fetch).not.toHaveBeenCalled();
     unmount();
   });
 
   it("reports offline for failed probes and responds to offline events", async () => {
     fetch.mockRejectedValueOnce(new TypeError("Network unavailable"));
     const { result, unmount } = renderHook(() =>
-      useOnlineStatus("https://project.supabase.co/auth/v1/health"),
+      useOnlineStatus(
+        "https://project.supabase.co/auth/v1/health",
+        "public-test-key",
+      ),
     );
 
     await waitFor(() => expect(fetch).toHaveBeenCalledOnce());

@@ -56,8 +56,7 @@ describe("offline financial write controls", () => {
         .disabled,
     ).toBe(true);
     expect(
-      screen.getByRole("spinbutton", { name: /Valor entregue por Ana/i })
-        .disabled,
+      screen.getByRole("textbox", { name: /Valor entregue por Ana/i }).disabled,
     ).toBe(true);
     expect(supabase.insert).not.toHaveBeenCalled();
     expect(supabase.rpc).not.toHaveBeenCalled();

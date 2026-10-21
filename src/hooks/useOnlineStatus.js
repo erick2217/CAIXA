@@ -3,11 +3,11 @@ import { useEffect, useState } from "react";
 const PROBE_TIMEOUT_MS = 3000;
 const PROBE_INTERVAL_MS = 30000;
 
-export function useOnlineStatus(probeUrl) {
+export function useOnlineStatus(probeUrl, apiKey) {
   const [online, setOnline] = useState(false);
 
   useEffect(() => {
-    if (!probeUrl) {
+    if (!probeUrl || !apiKey) {
       setOnline(false);
       return undefined;
     }
@@ -35,6 +35,7 @@ export function useOnlineStatus(probeUrl) {
       try {
         const response = await fetch(probeUrl, {
           cache: "no-store",
+          headers: { apikey: apiKey },
           signal: requestController.signal,
         });
         if (active && currentRequestId === requestId) {
@@ -71,7 +72,7 @@ export function useOnlineStatus(probeUrl) {
       window.removeEventListener("online", verifyConnection);
       window.removeEventListener("offline", handleOffline);
     };
-  }, [probeUrl]);
+  }, [apiKey, probeUrl]);
 
   return online;
 }
